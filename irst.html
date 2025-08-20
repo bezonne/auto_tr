@@ -92,7 +92,7 @@
   <script>
     let currentSum = 0;
     let currentEquation = '';
-    let timeLeft = 3;
+    let timeLeft = 30;
     let timerInterval = null;
     let challengeActive = false;
 
@@ -132,7 +132,7 @@
       document.getElementById('submitBtn').disabled = false;
 
       clearMessages();
-      startTimer(3);
+      startTimer(30);
       challengeActive = true;
     }
 
@@ -216,7 +216,7 @@
       document.getElementById('inputField').disabled = true;
       document.getElementById('submitBtn').disabled = true;
 
-      showCode('2314');
+      showCode(codes.test1);
     }
   </script>
 </body>
