@@ -82,12 +82,14 @@
     <div id="yesEq" class="equation"></div>
 
     <input type="text" id="inputField" placeholder="Введите сумму" disabled />
-    <button id="submitBtn" onclick="onSubmit()" disabled>Ввод</button>
+    <button id="submitBtn" onclick="onSubmit(event)" disabled>Ввод</button>
 
     <div id="timer" class="timer"></div>
     <div id="message" class="error"></div>
     <div id="code" class="code"></div>
   </div>
+
+  <script src="codes.js"></script>
 
   <script>
     let currentSum = 0;
@@ -95,6 +97,9 @@
     let timeLeft = 30;
     let timerInterval = null;
     let challengeActive = false;
+
+    // Выберите текущий тест
+    let currentTestCode = 'test1';
 
     function generateEquation() {
       let parts = [];
@@ -197,7 +202,9 @@
       codeSpan.className = 'code';
     }
 
-    function onSubmit() {
+    function onSubmit(event) {
+      event.preventDefault();
+
       if (!challengeActive) return;
 
       const input = document.getElementById('inputField').value.trim();
@@ -216,7 +223,7 @@
       document.getElementById('inputField').disabled = true;
       document.getElementById('submitBtn').disabled = true;
 
-      showCode(codes.test1);
+      showCode(codes[currentTestCode]);
     }
   </script>
 </body>
