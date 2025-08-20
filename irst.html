@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Задание с уравнением и таймером</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f0f0f0;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 450px;
+    }
+    button {
+      font-size: 24px;
+      padding: 15px 30px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid #555;
+      background-color: #fff;
+      transition: 0.3s;
+      min-width: 120px;
+    }
+    button:hover {
+      background-color: #e0e0e0;
+    }
+    input[type="text"] {
+      font-size: 24px;
+      padding: 10px;
+      width: 220px;
+      border-radius: 8px;
+      border: 2px solid #555;
+      margin-top: 20px;
+      text-align: center;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .equation {
+      font-weight: bold;
+      font-size: 18px;
+      margin: 30px 0 30px 0;
+      letter-spacing: 3px;
+      color: #333;
+      user-select: text;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .code, .error, .timer {
+      display: block;
+      font-weight: bold;
+      font-size: 20px;
+      margin: 15px 0;
+    }
+    .code {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+    .timer {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button id="yesBtn" onclick="startChallenge()">Да</button>
+    <button id="noBtn" onclick="clearAll()">Нет</button>
+
+    <div id="yesEq" class="equation"></div>
+
+    <input type="text" id="inputField" placeholder="Введите сумму" disabled />
+    <button id="submitBtn" onclick="onSubmit()" disabled>Ввод</button>
+
+    <div id="timer" class="timer"></div>
+    <div id="message" class="error"></div>
+    <div id="code" class="code"></div>
+  </div>
+
+  <script>
+    let currentSum = 0;
+    let currentEquation = '';
+    let timeLeft = 3;
+    let timerInterval = null;
+    let challengeActive = false;
+
+    function generateEquation() {
+      let parts = [];
+      let maxDigit = 20; // ограничим максимум числа
+      let remaining = Math.floor(Math.random() * 51) + 50; // случайное число от 50 до 100
+      let count = 10;
+      let sum = remaining;
+      // Сгенерируем 9 чисел, потом посчитаем 10-е как оставшееся, чтобы сумма была равна remaining
+      for (let i = 0; i < count - 1; i++) {
+        let maxForPart = remaining - (count - 1 - i);
+        const value = Math.floor(Math.random() * maxForPart) + 1;
+        parts.push(value);
+        remaining -= value;
+      }
+      parts.push(remaining);
+
+      // Перемешаем для случайности расположения
+      for (let i = parts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [parts[i], parts[j]] = [parts[j], parts[i]];
+      }
+
+      currentSum = sum;
+      return parts;
+    }
+
+    function startChallenge() {
+      const parts = generateEquation();
+      currentEquation = parts.map(n => n.toString()).join('');
+      const equationWithPlus = parts.join(' + ');
+      document.getElementById('yesEq').textContent = equationWithPlus;
+
+      document.getElementById('inputField').value = '';
+      document.getElementById('inputField').disabled = false;
+      document.getElementById('submitBtn').disabled = false;
+
+      clearMessages();
+      startTimer(3);
+      challengeActive = true;
+    }
+
+    function startTimer(seconds) {
+      timeLeft = seconds;
+      updateTimerDisplay();
+
+      if(timerInterval) clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          if (challengeActive) {
+            challengeActive = false;
+            document.getElementById('inputField').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+            showMessage('Ваше время вышло');
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerSpan = document.getElementById('timer');
+      timerSpan.textContent = `Время: ${timeLeft} сек`;
+    }
+
+    function clearMessages() {
+      document.getElementById('message').textContent = '';
+      document.getElementById('code').textContent = '';
+      document.getElementById('timer').textContent = '';
+    }
+
+    function clearAll() {
+      clearMessages();
+      challengeActive = false;
+      if(timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      currentEquation = '';
+      currentSum = 0;
+      document.getElementById('inputField').value = '';
+      document.getElementById('inputField').disabled = true;
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('yesEq').textContent = '';
+    }
+
+    function showMessage(msg) {
+      const messageSpan = document.getElementById('message');
+      messageSpan.textContent = msg;
+      messageSpan.className = 'error';
+    }
+
+    function showCode(code) {
+      const codeSpan = document.getElementById('code');
+      codeSpan.textContent = 'Код: ' + code;
+      codeSpan.className = 'code';
+    }
+
+    function onSubmit() {
+      if (!challengeActive) return;
+
+      const input = document.getElementById('inputField').value.trim();
+      clearMessages();
+
+      if (parseInt(input) !== currentSum) {
+        showMessage('Ошибка');
+        return;
+      }
+
+      challengeActive = false;
+      if(timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      document.getElementById('inputField').disabled = true;
+      document.getElementById('submitBtn').disabled = true;
+
+      showCode('2314');
+    }
+  </script>
+</body>
+</html>
