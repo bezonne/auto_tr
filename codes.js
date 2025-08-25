@@ -1,3 +1,4 @@
 const codes = {
-  test1: '2314'
+  test1: '2314',
+  locatorsTask: '5489'
 };
