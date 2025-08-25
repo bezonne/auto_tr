@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
-    /* Совпадает с полем Имя */
-    #nameField, #dobField {
+    /* Поля одинакового стиля */
+    input[type="text"], input[type="password"] {
       font-size: 20px;
       padding: 8px;
       border-radius: 6px;
@@ -15,6 +15,14 @@
       width: 100%;
       box-sizing: border-box;
       cursor: text;
+    }
+    select {
+      font-size: 20px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 2px solid #555;
+      width: 100%;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -27,10 +35,10 @@
       <label for="passwordField">Пароль:</label>
       <input type="password" id="passwordField" name="password" required />
 
-      <label for="dobField">Дата рождения (формат ДД.ММ.ГГГГ):</label>
+      <label for="dobField">Дата рождения:</label>
       <input type="text" id="dobField" name="dobField" placeholder="ДД.ММ.ГГГГ" required />
 
-      <label>Пол:</label>
+      <label for="genderField">Пол:</label>
       <select id="genderField" name="gender" required>
         <option value="" disabled selected>Выберите пол</option>
         <option value="male">Мужской</option>
@@ -57,12 +65,10 @@
   <script src="codes.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    const dobField = document.getElementById("dobField");
-
-    flatpickr(dobField, {
+    flatpickr("#dobField", {
       dateFormat: "d.m.Y",
       allowInput: true,
-      // Календарь открывается при клике в поле (по умолчанию)
+      // календарь откроется при клике в поле
     });
 
     let currentSum = 0;
